@@ -1,13 +1,7 @@
 #
 # https://github.com/P3TERX/Actions-OpenWrt
-#
-# File: .github/workflows/openwrt-bulder.yml
-# Description: Build OpenWrt using GitHub Actions
-#
-# Copyright (c) 2019-2024 P3TERX <https://p3terx.com>
-#
-# This is free software, licensed under the MIT License.
-# See /LICENSE for more information.
+# File: .github/workflows/openwrt-builder.yml
+# Description: Build LiBwrt using GitHub Actions with First-Principles Architecture
 #
 
 name: OpenWrt Builder
@@ -16,9 +10,13 @@ on:
   repository_dispatch:
   workflow_dispatch:
 
+permissions:
+  contents: write
+  actions: write
+
 env:
-  REPO_URL: https://github.com/chenxin527/openwrt-ipq
-  REPO_BRANCH: main-nss
+  REPO_URL: https://github.com/Albresky/OpenWrt-JDC-AX1800-Pro
+  REPO_BRANCH: main
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: .config
   DIY_P1_SH: diy-part1.sh
