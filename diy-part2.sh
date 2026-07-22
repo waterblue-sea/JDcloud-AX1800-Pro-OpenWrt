@@ -119,3 +119,7 @@ fi
 exit 0
 EOF
 chmod +x package/base-files/files/etc/uci-defaults/99-firstboot-stealth-init
+echo "CONFIG_KERNEL_SKB_EXTENSIONS=y" >> .config
+echo "CONFIG_KERNEL_NET_TC_SKB_EXT=y" >> .config
+echo "CONFIG_KERNEL_NET_RX_BUSY_POLL=y" >> .config
+logger -t "Kernel-Fix" "Fix finish!"
