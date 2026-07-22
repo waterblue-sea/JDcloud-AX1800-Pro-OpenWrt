@@ -90,12 +90,20 @@ jobs:
       uses: P3TERX/ssh2actions@v1.0.0
       if: env.SSH_ACTIONS == 'true'
 
-    - name: Compile the firmware
+    - name: Compile the firmware (With First-Principles Probing)
       id: compile
       run: |
         cd openwrt
         echo -e "$(nproc) thread compile"
-        make -j$(nproc) || make -j1 || make -j1 V=s
+        if ! make -j$(nproc) > build.log 2>&1; then
+          if ! make -j1 V=s >> build.log 2>&1; then
+            echo "================ ERROR LOG MATRIX START ================"
+            grep -B 30 -A 15 -i -E "error:|error 2|undefined reference|has no member" build.log | tail -n 80
+            echo "================  ERROR LOG MATRIX END  ================"
+            echo "status=failed" >> $GITHUB_OUTPUT
+            exit 2
+          fi
+        fi
         echo "status=success" >> $GITHUB_OUTPUT
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
@@ -114,7 +122,7 @@ jobs:
 
     - name: Organize files
       id: organize
-      if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
+      if: steps.compile.outputs.status == 'success' && env.UPLOAD_FIRMWARE == 'true' && !cancelled()
       run: |
         TARGET_DIR=$(ls -d openwrt/bin/targets/*/* | head -n 1)
         cd $TARGET_DIR
@@ -128,7 +136,7 @@ jobs:
       with:
         name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
         path: ${{ env.FIRMWARE }}
-
+        
     - name: Generate release tag
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
