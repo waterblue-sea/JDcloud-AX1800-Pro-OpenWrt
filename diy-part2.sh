@@ -30,6 +30,7 @@ uci -q set firewall.@defaults[0].flow_offloading_hw='0'
 uci commit firewall
 
 uci set network.lan.ipaddr='172.18.16.1'
+uci set network.lan.netmask='255.255.255.0'
 uci set dhcp.lan.start='100'
 uci set dhcp.lan.limit='150'
 uci set dhcp.lan.leasetime='12h'
@@ -45,16 +46,16 @@ uci -q set wireless.@wifi-device[0].country='CN' || uci -q set wireless.radio0.c
 uci -q set wireless.@wifi-iface[0].ssid='Home-5G' || uci -q set wireless.default_radio0.ssid='Home-5G'
 uci -q set wireless.@wifi-iface[0].encryption='psk2+ccmp' || uci -q set wireless.default_radio0.encryption='psk2+ccmp'
 # chang with the password you want
-uci -q set wireless.@wifi-iface[0].key='123456' || uci -q set wireless.default_radio0.key='123456'
+uci -q set wireless.@wifi-iface[0].key='12345678' || uci -q set wireless.default_radio0.key='12345678'
 
 uci -q set wireless.@wifi-device[1].country='CN' || uci -q set wireless.radio1.country='CN'
 uci -q set wireless.@wifi-iface[1].ssid='Home-2.4G' || uci -q set wireless.default_radio1.ssid='Home-2.4G'
 uci -q set wireless.@wifi-iface[1].encryption='psk2+ccmp' || uci -q set wireless.default_radio1.encryption='psk2+ccmp'
-uci -q set wireless.@wifi-iface[1].key='123456' || uci -q set wireless.default_radio1.key='123456'
+uci -q set wireless.@wifi-iface[1].key='12345678' || uci -q set wireless.default_radio1.key='12345678'
 uci commit wireless
 
 if [ ! -f "/etc/config/storage_matrix_done" ]; then
-    logger -t "Storage-Init" "Mermory
+    logger -t "Storage-Init" "Mermory"
     
     mkfs.ext4 -F /dev/mmcblk0p26 2>/dev/null
     mkfs.ext4 -F /dev/mmcblk0p25 2>/dev/null
