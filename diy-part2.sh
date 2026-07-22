@@ -12,6 +12,20 @@ sed -i '/luci-app-upnp/d' .config 2>/dev/null || true
 sed -i '/qca-nss-ecm/d' .config 2>/dev/null || true
 sed -i '/kmod-qca-nss-ecm/d' .config 2>/dev/null || true
 
+sed -i '/qca-nss-fast-classifier/d' .config 2>/dev/null || true
+sed -i '/kmod-fast-classifier/d' .config 2>/dev/null || true
+sed -i '/shortcut-fe/d' .config 2>/dev/null || true
+sed -i '/kmod-shortcut-fe/d' .config 2>/dev/null || true
+sed -i '/kmod-shortcut-fe-cm/d' .config 2>/dev/null || true
+
+sed -i '/qca-nss-cfi/d' .config 2>/dev/null || true
+sed -i '/kmod-qca-nss-cfi/d' .config 2>/dev/null || true
+sed -i '/kmod-qca-nss-drv-pppoe/d' .config 2>/dev/null || true
+sed -i '/kmod-qca-nss-drv-crypto/d' .config 2>/dev/null || true
+sed -i '/kmod-qca-nss-macsec/d' .config 2>/dev/null || true
+sed -i '/kmod-ipt-offload/d' .config 2>/dev/null || true
+sed -i '/kmod-nft-offload/d' .config 2>/dev/null || true
+
 mkdir -p package/base-files/files/etc/modprobe.d/
 cat << 'EOF' > package/base-files/files/etc/modprobe.d/10-ath11k-nss.conf
 options ath11k nss_offload=1
@@ -45,7 +59,6 @@ sed -i "s/option disabled '1'/option disabled '0'/g" /etc/config/wireless 2>/dev
 uci -q set wireless.@wifi-device[0].country='CN' || uci -q set wireless.radio0.country='CN'
 uci -q set wireless.@wifi-iface[0].ssid='Home-5G' || uci -q set wireless.default_radio0.ssid='Home-5G'
 uci -q set wireless.@wifi-iface[0].encryption='psk2+ccmp' || uci -q set wireless.default_radio0.encryption='psk2+ccmp'
-# chang with the password you want
 uci -q set wireless.@wifi-iface[0].key='12345678' || uci -q set wireless.default_radio0.key='12345678'
 
 uci -q set wireless.@wifi-device[1].country='CN' || uci -q set wireless.radio1.country='CN'
@@ -123,4 +136,15 @@ chmod +x package/base-files/files/etc/uci-defaults/99-firstboot-stealth-init
 echo "CONFIG_KERNEL_SKB_EXTENSIONS=y" >> .config
 echo "CONFIG_KERNEL_NET_TC_SKB_EXT=y" >> .config
 echo "CONFIG_KERNEL_NET_RX_BUSY_POLL=y" >> .config
+
+cat << 'EOF_KERNEL_MUTATIONS' >> .config
+# CONFIG_KERNEL_NF_CONNTRACK_DSCPREMARK_EXT is not set
+# CONFIG_KERNEL_NF_CONNTRACK_CHAIN_EVENTS is not set
+# CONFIG_KERNEL_NF_CONNTRACK_RTCACHE is not set
+# CONFIG_KERNEL_NF_CONNTRACK_MARK_EXT is not set
+# CONFIG_KERNEL_SKB_RECYCLE is not set
+# CONFIG_KERNEL_SKB_RECYCLE_MAX_PREALLOC is not set
+# CONFIG_KERNEL_OPENVSWITCH_NSS is not set
+EOF_KERNEL_MUTATIONS
+
 logger -t "Kernel-Fix" "Fix finish!"
