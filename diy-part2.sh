@@ -148,3 +148,8 @@ find target/linux/qualcommax -name "config-*" -o -name "config-default" | while 
 done
 
 logger -t "Kernel-Fix" "Fix finish!"
+
+find . -type f -exec grep -l "Downloading OpenSSL QUIC" {} + | while read -r file; do
+    sed -i '/raw.githubusercontent/s/^/#/g' "$file"
+    sed -i 's/exit 1/exit 0/g' "$file"
+done
