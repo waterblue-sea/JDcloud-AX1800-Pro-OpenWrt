@@ -1,16 +1,24 @@
 #!/bin/sh
-sed -i 's/192.168.1.1/172.18.16.1/g' package/base-files/files/bin/config_generate
-
-sed -i '/smartdns/d' .config 2>/dev/null || true
-sed -i '/luci-app-smartdns/d' .config 2>/dev/null || true
-sed -i '/miniupnpd/d' .config 2>/dev/null || true
-sed -i '/luci-app-upnp/d' .config 2>/dev/null || true
+sed -i 's/192.168.1.1/10.18.0.1/g' package/base-files/files/bin/config_generate    
 
 sed -i 's/3.31/3.25/g' feeds/luci/libs/rpcd-mod-luci/CMakeLists.txt 2>/dev/null || true
 
-sed -i '/CONFIG_PACKAGE_kmod-qca-nss-ecm=y/d' .config
+sed -i -E '/kmod-qca-nss-drv-(pppoe|pptp|l2tpv2|pvxlanmgr|tun6rd|tunipip6|gre|map-t|ecm)/d' .config
+sed -i -E '/kmod-(pptp|l2tp|gre)/d' .config
 echo '# CONFIG_PACKAGE_kmod-qca-nss-ecm is not set' >> .config
 echo '# CONFIG_PACKAGE_qca-nss-ecm is not set' >> .config
+
+find target/linux/qualcommax/ -name "*.mk" -o -name "Makefile" | xargs sed -i -E 's/kmod-qca-nss-drv-(pppoe|pptp|l2tpv2|pvxlanmgr|tun6rd|tunipip6|gre|map-t|ecm)//g'
+find target/linux/qualcommax/ -name "*.mk" -o -name "Makefile" | xargs sed -i -E 's/kmod-(pptp|l2tp|gre)//g'
+
+find target/linux/qualcommax -name "config-*" | while read cfg; do
+    sed -i '/CONFIG_NF_CONNTRACK_DSCPREMARK_EXT/d' "$cfg"
+    echo '# CONFIG_NF_CONNTRACK_DSCPREMARK_EXT is not set' >> "$cfg"
+    
+    sed -i '/CONFIG_CMDLINE/d' "$cfg"
+    echo 'CONFIG_CMDLINE="console=ttyMSM0,115200n8"' >> "$cfg"
+    echo 'CONFIG_CMDLINE_EXTEND=y' >> "$cfg"
+done
 
 mkdir -p package/base-files/files/etc/modprobe.d/
 cat << 'EOF' > package/base-files/files/etc/modprobe.d/10-ath11k-nss.conf
@@ -18,12 +26,6 @@ options ath11k nss_offload=1
 options ath11k_ahb nss_offload=1
 blacklist qca_nss_ecm
 EOF
-
-find target/linux/qualcommax -name "config-*" | while read cfg; do
-    sed -i '/CONFIG_CMDLINE/d' "$cfg"
-    echo 'CONFIG_CMDLINE="console=ttyMSM0,115200n8"' >> "$cfg"
-    echo 'CONFIG_CMDLINE_EXTEND=y' >> "$cfg"
-done
 
 mkdir -p package/base-files/files/etc/uci-defaults/
 cat << 'EOF' > package/base-files/files/etc/uci-defaults/99-firstboot-stealth-init
@@ -33,7 +35,7 @@ uci -q set firewall.@defaults[0].flow_offloading='0'
 uci -q set firewall.@defaults[0].flow_offloading_hw='0'
 uci commit firewall
 
-uci set network.lan.ipaddr='172.18.16.1'
+uci set network.lan.ipaddr='10.18.0.1'
 uci set network.lan.netmask='255.255.255.0'
 uci set dhcp.lan.start='100'
 uci set dhcp.lan.limit='150'
