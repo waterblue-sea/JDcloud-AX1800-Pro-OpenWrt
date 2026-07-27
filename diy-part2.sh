@@ -1,7 +1,12 @@
 #!/bin/sh
 sed -i 's/192.168.1.1/10.18.0.1/g' package/base-files/files/bin/config_generate    
 
-sed -i 's/3.31/3.25/g' feeds/luci/libs/rpcd-mod-luci/CMakeLists.txt 2>/dev/null || true
+find feeds/ -type f -name "CMakeLists.txt" -exec sed -i 's/3.31/3.25/g' {} +
+
+for app in argon-config diskman openclash smartdns uhttpd unblockneteasemusic upnp; do
+    sed -i "/CONFIG_PACKAGE_luci-app-${app}=y/d" .config
+    echo "# CONFIG_PACKAGE_luci-app-${app} is not set" >> .config
+done
 
 sed -i -E '/kmod-qca-nss-drv-(pppoe|pptp|l2tpv2|pvxlanmgr|tun6rd|tunipip6|gre|map-t|ecm)/d' .config
 sed -i -E '/kmod-(pptp|l2tp|gre)/d' .config
