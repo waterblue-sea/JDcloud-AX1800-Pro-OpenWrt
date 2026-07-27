@@ -11,12 +11,15 @@ echo '# CONFIG_PACKAGE_qca-nss-ecm is not set' >> .config
 find target/linux/qualcommax/ -name "*.mk" -o -name "Makefile" | xargs sed -i -E 's/kmod-qca-nss-drv-(pppoe|pptp|l2tpv2|pvxlanmgr|tun6rd|tunipip6|gre|map-t|ecm)//g'
 find target/linux/qualcommax/ -name "*.mk" -o -name "Makefile" | xargs sed -i -E 's/kmod-(pptp|l2tp|gre)//g'
 
+sed -i '/CONFIG_PACKAGE_kmod-br-netfilter/d' .config
+echo 'CONFIG_PACKAGE_kmod-br-netfilter=y' >> .config
+
+sed -i '/CONFIG_KERNEL_SKB_EXTENSIONS/d' .config
+echo 'CONFIG_KERNEL_SKB_EXTENSIONS=y' >> .config
+
 find target/linux/qualcommax -name "config-*" | while read cfg; do
     sed -i '/CONFIG_NF_CONNTRACK_DSCPREMARK_EXT/d' "$cfg"
     echo '# CONFIG_NF_CONNTRACK_DSCPREMARK_EXT is not set' >> "$cfg"
-
-    sed -i '/CONFIG_SKB_EXTENSIONS/d' "$cfg"
-    echo 'CONFIG_SKB_EXTENSIONS=y' >> "$cfg"
     
     sed -i '/CONFIG_CMDLINE/d' "$cfg"
     echo 'CONFIG_CMDLINE="console=ttyMSM0,115200n8"' >> "$cfg"
