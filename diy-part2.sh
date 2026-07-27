@@ -14,6 +14,9 @@ find target/linux/qualcommax/ -name "*.mk" -o -name "Makefile" | xargs sed -i -E
 find target/linux/qualcommax -name "config-*" | while read cfg; do
     sed -i '/CONFIG_NF_CONNTRACK_DSCPREMARK_EXT/d' "$cfg"
     echo '# CONFIG_NF_CONNTRACK_DSCPREMARK_EXT is not set' >> "$cfg"
+
+    sed -i '/CONFIG_SKB_EXTENSIONS/d' "$cfg"
+    echo 'CONFIG_SKB_EXTENSIONS=y' >> "$cfg"
     
     sed -i '/CONFIG_CMDLINE/d' "$cfg"
     echo 'CONFIG_CMDLINE="console=ttyMSM0,115200n8"' >> "$cfg"
