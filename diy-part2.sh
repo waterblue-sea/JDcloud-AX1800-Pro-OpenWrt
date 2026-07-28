@@ -8,17 +8,19 @@ for app in argon-config diskman openclash smartdns uhttpd unblockneteasemusic up
     echo "# CONFIG_PACKAGE_luci-app-${app} is not set" >> .config
 done
 
-sed -i -E '/kmod-qca-nss-drv-(pppoe|pptp|l2tpv2|pvxlanmgr|tun6rd|tunipip6|gre|map-t|ecm)/d' .config
+sed -i -E '/kmod-qca-nss-drv-(pppoe|pptp|l2tpv2|pvxlanmgr|tun6rd|tunipip6|gre|map-t)/d' .config
 sed -i -E '/kmod-(pptp|l2tp|gre)/d' .config
+sed -i -E '/kmod-qca-nss-ecm/d' .config
+sed -i -E '/qca-nss-ecm/d' .config
 echo '# CONFIG_PACKAGE_kmod-qca-nss-ecm is not set' >> .config
 echo '# CONFIG_PACKAGE_qca-nss-ecm is not set' >> .config
 
 find target/linux/qualcommax/ -name "*.mk" -o -name "Makefile" | xargs sed -i -E 's/kmod-qca-nss-drv-(pppoe|pptp|l2tpv2|pvxlanmgr|tun6rd|tunipip6|gre|map-t|ecm)//g'
 find target/linux/qualcommax/ -name "*.mk" -o -name "Makefile" | xargs sed -i -E 's/kmod-(pptp|l2tp|gre)//g'
+find target/linux/qualcommax/ -name "*.mk" -o -name "Makefile" | xargs sed -i -E 's/kmod-qca-nss-ecm//g'
 
 sed -i '/CONFIG_PACKAGE_kmod-br-netfilter/d' .config
 echo 'CONFIG_PACKAGE_kmod-br-netfilter=y' >> .config
-
 sed -i '/CONFIG_KERNEL_SKB_EXTENSIONS/d' .config
 echo 'CONFIG_KERNEL_SKB_EXTENSIONS=y' >> .config
 
@@ -37,6 +39,14 @@ options ath11k nss_offload=1
 options ath11k_ahb nss_offload=1
 blacklist qca_nss_ecm
 EOF
+
+NFT_PATCH_DIR="package/network/utils/nftables/patches"
+if [ -d "$NFT_PATCH_DIR" ]; then
+    grep -l "nft_fullcone_attributes" $NFT_PATCH_DIR/*.patch 2>/dev/null | xargs -r rm -f
+fi
+find package/ -type f -iname "*fullcone*.patch" | xargs -r rm -f
+sed -i '/CONFIG_PACKAGE_kmod-nft-fullcone/d' .config
+echo '# CONFIG_PACKAGE_kmod-nft-fullcone is not set' >> .config
 
 mkdir -p package/base-files/files/etc/uci-defaults/
 cat << 'EOF' > package/base-files/files/etc/uci-defaults/99-firstboot-stealth-init
@@ -141,13 +151,3 @@ fi
 exit 0
 EOF
 chmod +x package/base-files/files/etc/uci-defaults/99-firstboot-stealth-init
-
-NFT_PATCH_DIR="package/network/utils/nftables/patches"
-if [ -d "$NFT_PATCH_DIR" ]; then
-    grep -l "nft_fullcone_attributes" $NFT_PATCH_DIR/*.patch 2>/dev/null | xargs -r rm -f
-fi
-
-find package/ -type f -iname "*fullcone*.patch" | xargs -r rm -f
-
-sed -i '/CONFIG_PACKAGE_kmod-nft-fullcone/d' .config
-echo '# CONFIG_PACKAGE_kmod-nft-fullcone is not set' >> .config
