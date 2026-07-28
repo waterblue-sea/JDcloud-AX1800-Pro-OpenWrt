@@ -19,7 +19,7 @@ find target/linux/qualcommax/ -name "*.mk" -o -name "Makefile" | xargs sed -i -E
 find target/linux/qualcommax/ -name "*.mk" -o -name "Makefile" | xargs sed -i -E 's/kmod-(pptp|l2tp|gre)//g'
 find target/linux/qualcommax/ -name "*.mk" -o -name "Makefile" | xargs sed -i -E 's/kmod-qca-nss-ecm//g'
 
-ind feeds/nss_packages/ -name "Makefile" | xargs sed -i -E 's/\+kmod-qca-nss-ecm//g'
+find feeds/nss_packages/ -name "Makefile" | xargs sed -i -E 's/\+kmod-qca-nss-ecm//g'
 find feeds/nss_packages/ -name "Makefile" | xargs sed -i -E 's/\+kmod-pptp//g'
 find package/ -name "Makefile" | xargs sed -i -E 's/\+kmod-qca-nss-ecm//g'
 
