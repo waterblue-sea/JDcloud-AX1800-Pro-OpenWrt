@@ -1,5 +1,5 @@
 #!/bin/sh
-sed -i 's/192.168.1.1/172.18.16.1/g' package/base-files/files/bin/config_generate    
+sed -i 's/192.168.1.1/10.18.0.1/g' package/base-files/files/bin/config_generate    
 
 find feeds/ -type f -name "CMakeLists.txt" -exec sed -i 's/3.31/3.25/g' {} +
 
@@ -31,10 +31,6 @@ echo 'CONFIG_KERNEL_SKB_EXTENSIONS=y' >> .config
 find target/linux/qualcommax -name "config-*" | while read cfg; do
     sed -i '/CONFIG_NF_CONNTRACK_DSCPREMARK_EXT/d' "$cfg"
     echo '# CONFIG_NF_CONNTRACK_DSCPREMARK_EXT is not set' >> "$cfg"
-    
-    sed -i '/CONFIG_CMDLINE/d' "$cfg"
-    echo 'CONFIG_CMDLINE="console=ttyMSM0,115200n8"' >> "$cfg"
-    echo 'CONFIG_CMDLINE_EXTEND=y' >> "$cfg"
 done
 
 mkdir -p package/base-files/files/etc/modprobe.d/
@@ -60,7 +56,7 @@ uci -q set firewall.@defaults[0].flow_offloading='0'
 uci -q set firewall.@defaults[0].flow_offloading_hw='0'
 uci commit firewall
 
-uci set network.lan.ipaddr='172.18.16.1'
+uci set network.lan.ipaddr='10.18.0.1'
 uci set network.lan.netmask='255.255.255.0'
 uci set dhcp.lan.start='100'
 uci set dhcp.lan.limit='150'
