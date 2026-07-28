@@ -141,3 +141,13 @@ fi
 exit 0
 EOF
 chmod +x package/base-files/files/etc/uci-defaults/99-firstboot-stealth-init
+
+NFT_PATCH_DIR="package/network/utils/nftables/patches"
+if [ -d "$NFT_PATCH_DIR" ]; then
+    grep -l "nft_fullcone_attributes" $NFT_PATCH_DIR/*.patch 2>/dev/null | xargs -r rm -f
+fi
+
+find package/ -type f -iname "*fullcone*.patch" | xargs -r rm -f
+
+sed -i '/CONFIG_PACKAGE_kmod-nft-fullcone/d' .config
+echo '# CONFIG_PACKAGE_kmod-nft-fullcone is not set' >> .config
