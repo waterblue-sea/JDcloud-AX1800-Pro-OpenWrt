@@ -19,6 +19,10 @@ find target/linux/qualcommax/ -name "*.mk" -o -name "Makefile" | xargs sed -i -E
 find target/linux/qualcommax/ -name "*.mk" -o -name "Makefile" | xargs sed -i -E 's/kmod-(pptp|l2tp|gre)//g'
 find target/linux/qualcommax/ -name "*.mk" -o -name "Makefile" | xargs sed -i -E 's/kmod-qca-nss-ecm//g'
 
+ind feeds/nss_packages/ -name "Makefile" | xargs sed -i -E 's/\+kmod-qca-nss-ecm//g'
+find feeds/nss_packages/ -name "Makefile" | xargs sed -i -E 's/\+kmod-pptp//g'
+find package/ -name "Makefile" | xargs sed -i -E 's/\+kmod-qca-nss-ecm//g'
+
 sed -i '/CONFIG_PACKAGE_kmod-br-netfilter/d' .config
 echo 'CONFIG_PACKAGE_kmod-br-netfilter=y' >> .config
 sed -i '/CONFIG_KERNEL_SKB_EXTENSIONS/d' .config
@@ -26,7 +30,7 @@ echo 'CONFIG_KERNEL_SKB_EXTENSIONS=y' >> .config
 
 find target/linux/qualcommax -name "config-*" | while read cfg; do
     sed -i '/CONFIG_NF_CONNTRACK_DSCPREMARK_EXT/d' "$cfg"
-    echo 'CONFIG_NF_CONNTRACK_DSCPREMARK_EXT=y' >> "$cfg"
+    echo '# CONFIG_NF_CONNTRACK_DSCPREMARK_EXT is not set' >> "$cfg"
     
     sed -i '/CONFIG_CMDLINE/d' "$cfg"
     echo 'CONFIG_CMDLINE="console=ttyMSM0,115200n8"' >> "$cfg"
