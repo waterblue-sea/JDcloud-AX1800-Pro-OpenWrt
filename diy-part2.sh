@@ -1,5 +1,5 @@
 #!/bin/sh
-sed -i 's/192.168.1.1/10.18.0.1/g' package/base-files/files/bin/config_generate    
+sed -i 's/192.168.1.1/172.18.16.1/g' package/base-files/files/bin/config_generate    
 
 find feeds/ -type f -name "CMakeLists.txt" -exec sed -i 's/3.31/3.25/g' {} +
 
@@ -26,7 +26,7 @@ echo 'CONFIG_KERNEL_SKB_EXTENSIONS=y' >> .config
 
 find target/linux/qualcommax -name "config-*" | while read cfg; do
     sed -i '/CONFIG_NF_CONNTRACK_DSCPREMARK_EXT/d' "$cfg"
-    echo '# CONFIG_NF_CONNTRACK_DSCPREMARK_EXT is not set' >> "$cfg"
+    echo 'CONFIG_NF_CONNTRACK_DSCPREMARK_EXT=y' >> "$cfg"
     
     sed -i '/CONFIG_CMDLINE/d' "$cfg"
     echo 'CONFIG_CMDLINE="console=ttyMSM0,115200n8"' >> "$cfg"
@@ -56,7 +56,7 @@ uci -q set firewall.@defaults[0].flow_offloading='0'
 uci -q set firewall.@defaults[0].flow_offloading_hw='0'
 uci commit firewall
 
-uci set network.lan.ipaddr='10.18.0.1'
+uci set network.lan.ipaddr='172.18.16.1'
 uci set network.lan.netmask='255.255.255.0'
 uci set dhcp.lan.start='100'
 uci set dhcp.lan.limit='150'
@@ -72,12 +72,12 @@ sed -i "s/option disabled '1'/option disabled '0'/g" /etc/config/wireless 2>/dev
 uci -q set wireless.@wifi-device[0].country='CN' || uci -q set wireless.radio0.country='CN'
 uci -q set wireless.@wifi-iface[0].ssid='Home-5G' || uci -q set wireless.default_radio0.ssid='Home-5G'
 uci -q set wireless.@wifi-iface[0].encryption='psk2+ccmp' || uci -q set wireless.default_radio0.encryption='psk2+ccmp'
-uci -q set wireless.@wifi-iface[0].key='StealthRouter2026' || uci -q set wireless.default_radio0.key='StealthRouter2026'
+uci -q set wireless.@wifi-iface[0].key='12345678' || uci -q set wireless.default_radio0.key='12345678'
 
 uci -q set wireless.@wifi-device[1].country='CN' || uci -q set wireless.radio1.country='CN'
 uci -q set wireless.@wifi-iface[1].ssid='Home-2.4G' || uci -q set wireless.default_radio1.ssid='Home-2.4G'
 uci -q set wireless.@wifi-iface[1].encryption='psk2+ccmp' || uci -q set wireless.default_radio1.encryption='psk2+ccmp'
-uci -q set wireless.@wifi-iface[1].key='StealthRouter2026' || uci -q set wireless.default_radio1.key='StealthRouter2026'
+uci -q set wireless.@wifi-iface[1].key='12345678' || uci -q set wireless.default_radio1.key='12345678'
 uci commit wireless
 
 if [ ! -f "/etc/config/storage_matrix_done" ]; then
