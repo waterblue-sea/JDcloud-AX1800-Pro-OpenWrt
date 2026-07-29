@@ -1,4 +1,5 @@
 #!/bin/sh
+
 sed -i 's/192.168.1.1/172.18.16.1/g' package/base-files/files/bin/config_generate    
 
 find feeds/ -type f -name "CMakeLists.txt" -exec sed -i 's/3.31/3.25/g' {} +
@@ -8,11 +9,36 @@ for app in argon-config diskman openclash smartdns uhttpd unblockneteasemusic up
     echo "# CONFIG_PACKAGE_luci-app-${app} is not set" >> .config
 done
 
-sed -i '/passwall/d' .config
-sed -i '/xray/d' .config
-sed -i '/sing-box/d' .config
-sed -i '/trojan-plus/d' .config
-sed -i '/shadowsocks-rust/d' .config
+for useless_pkg in ZABBIX_POSTGRESQL PACKAGE_node NODEJS_ PACKAGE_ruby PACKAGE_iperf PACKAGE_iperf3 PACKAGE_6in4 PACKAGE_6rd PACKAGE_miniupnpd; do
+    sed -i "/CONFIG_${useless_pkg}/d" .config
+done
+
+for proxy_core in passwall xray sing-box trojan-plus shadowsocks-rust; do
+    sed -i "/${proxy_core}/d" .config
+done
+
+sed -i '/CONFIG_LIBCURL_NGHTTP3/d' .config
+sed -i '/CONFIG_LIBCURL_NGTCP2/d' .config
+sed -i '/CONFIG_PACKAGE_libnghttp3/d' .config
+sed -i '/CONFIG_PACKAGE_libngtcp2/d' .config
+sed -i '/CONFIG_OVERRIDE_PKGS/d' .config
+
+echo '# CONFIG_LIBCURL_NGHTTP3 is not set' >> .config
+echo '# CONFIG_LIBCURL_NGTCP2 is not set' >> .config
+echo '# CONFIG_PACKAGE_libnghttp3 is not set' >> .config
+echo '# CONFIG_PACKAGE_libngtcp2 is not set' >> .config
+
+cat << 'EOF' >> .config
+# CONFIG_ZABBIX_POSTGRESQL is not set
+# CONFIG_PACKAGE_node is not set
+# CONFIG_PACKAGE_ruby is not set
+# CONFIG_PACKAGE_iperf is not set
+# CONFIG_PACKAGE_iperf3 is not set
+# CONFIG_PACKAGE_6in4 is not set
+# CONFIG_PACKAGE_6rd is not set
+# CONFIG_PACKAGE_miniupnpd is not set
+# CONFIG_PACKAGE_miniupnpd-nftables is not set
+EOF
 
 sed -i -E '/kmod-qca-nss-drv-(pppoe|pptp|l2tpv2|pvxlanmgr|tun6rd|tunipip6|gre|map-t)/d' .config
 sed -i -E '/kmod-(pptp|l2tp|gre)/d' .config
@@ -41,8 +67,8 @@ done
 
 mkdir -p package/base-files/files/etc/modprobe.d/
 cat << 'EOF' > package/base-files/files/etc/modprobe.d/10-ath11k-nss.conf
-options ath11k nss_offload=1
-options ath11k_ahb nss_offload=1
+options ath11k nss_offload=0
+options ath11k_ahb nss_offload=0
 blacklist qca_nss_ecm
 EOF
 
