@@ -3,10 +3,16 @@ sed -i 's/192.168.1.1/172.18.16.1/g' package/base-files/files/bin/config_generat
 
 find feeds/ -type f -name "CMakeLists.txt" -exec sed -i 's/3.31/3.25/g' {} +
 
-for app in argon-config diskman openclash smartdns uhttpd unblockneteasemusic upnp; do
+for app in argon-config diskman openclash smartdns uhttpd unblockneteasemusic upnp passwall; do
     sed -i "/CONFIG_PACKAGE_luci-app-${app}=y/d" .config
     echo "# CONFIG_PACKAGE_luci-app-${app} is not set" >> .config
 done
+
+sed -i '/passwall/d' .config
+sed -i '/xray/d' .config
+sed -i '/sing-box/d' .config
+sed -i '/trojan-plus/d' .config
+sed -i '/shadowsocks-rust/d' .config
 
 sed -i -E '/kmod-qca-nss-drv-(pppoe|pptp|l2tpv2|pvxlanmgr|tun6rd|tunipip6|gre|map-t)/d' .config
 sed -i -E '/kmod-(pptp|l2tp|gre)/d' .config
