@@ -38,6 +38,10 @@ cat << 'EOF' >> .config
 # CONFIG_PACKAGE_6rd is not set
 # CONFIG_PACKAGE_miniupnpd is not set
 # CONFIG_PACKAGE_miniupnpd-nftables is not set
+CONFIG_PACKAGE_kmod-nft-tproxy=y
+CONFIG_PACKAGE_kmod-nft-socket=y
+CONFIG_PACKAGE_kmod-nft-dict=y
+CONFIG_PACKAGE_kmod-nft-fib=y
 EOF
 
 sed -i -E '/kmod-qca-nss-drv-(pppoe|pptp|l2tpv2|pvxlanmgr|tun6rd|tunipip6|gre|map-t)/d' .config
