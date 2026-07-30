@@ -44,6 +44,21 @@ CONFIG_PACKAGE_kmod-nft-dict=y
 CONFIG_PACKAGE_kmod-nft-fib=y
 EOF
 
+sed -i -E '/kmod-qca-nss-drv-(pppoe|pptp|l2tpv2|pvxlanmgr|tun6rd|tunipip6|gre|map-t)/d' .config
+sed -i -E '/kmod-(pptp|l2tp|gre)/d' .config
+sed -i -E '/kmod-qca-nss-ecm/d' .config
+sed -i -E '/qca-nss-ecm/d' .config
+echo '# CONFIG_PACKAGE_kmod-qca-nss-ecm is not set' >> .config
+echo '# CONFIG_PACKAGE_qca-nss-ecm is not set' >> .config
+
+find target/linux/qualcommax/ -name "*.mk" -o -name "Makefile" | xargs sed -i -E 's/kmod-qca-nss-drv-(pppoe|pptp|l2tpv2|pvxlanmgr|tun6rd|tunipip6|gre|map-t)//g'
+find target/linux/qualcommax/ -name "*.mk" -o -name "Makefile" | xargs sed -i -E 's/kmod-(pptp|l2tp|gre)//g'
+find target/linux/qualcommax/ -name "*.mk" -o -name "Makefile" | xargs sed -i -E 's/kmod-qca-nss-ecm//g'
+
+find feeds/nss_packages/ -name "Makefile" | xargs sed -i -E 's/\+kmod-qca-nss-ecm//g'
+find feeds/nss_packages/ -name "Makefile" | xargs sed -i -E 's/\+kmod-pptp//g'
+find package/ -name "Makefile" | xargs sed -i -E 's/\+kmod-qca-nss-ecm//g'
+
 sed -i '/CONFIG_PACKAGE_kmod-br-netfilter/d' .config
 echo 'CONFIG_PACKAGE_kmod-br-netfilter=y' >> .config
 sed -i '/CONFIG_KERNEL_SKB_EXTENSIONS/d' .config
